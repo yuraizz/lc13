@@ -1,4 +1,0 @@
-author: "SumirekoFan"
-delete-after: True
-changes:
-  - bugfix: "Fixes a runtime caused by the E.G.O Console, in which, if a ghost interacted with it, since it couldn't check it's job, it returned null, and caused a runtime, which also did not allow ghosts to see the E.G.O Console."
