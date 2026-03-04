@@ -1,5 +1,0 @@
-author: "Deadkung"
-delete-after: True
-changes:
-  - rscadd: "/obj/item/grenade/r_corp/lobotomy"
-  - rscadd: "/obj/item/storage/box/lobotomygrenades"
