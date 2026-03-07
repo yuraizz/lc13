@@ -1,0 +1,5 @@
+author: "EnderMage99"
+delete-after: True
+changes:
+  - bugfix: "Players can no longer use items while airborne during Great Leap."
+  - bugfix: "Disciplinary Officers and Combat Research Agents now get a -20 stat requirement reduction when equipping Middle chain weapons."
