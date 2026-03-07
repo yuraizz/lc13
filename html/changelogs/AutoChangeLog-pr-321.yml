@@ -1,0 +1,5 @@
+author: "EnderMage99"
+delete-after: True
+changes:
+  - rscadd: "Added pixel shifting - hold N and press movement keys to shift your sprite within a tile for RP positioning. Moving normally resets the shift."
+  - code_imp: "Added add_offsets/remove_offsets system for managing pixel offsets on living mobs."
