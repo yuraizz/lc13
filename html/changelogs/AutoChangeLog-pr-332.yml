@@ -1,8 +1,0 @@
-author: "EnderMage99"
-delete-after: True
-changes:
-  - bugfix: "Fixed Augment Catalogue allowing two simultaneous users to create tickets with double the augments by making design state per-user."
-  - bugfix: "Fixed augment tickets being processable multiple times during fabrication via rapid clicking."
-  - balance: "Time Moratorium now requires 40 TREMOR (up from 15), consumes 50% of current TREMOR instead of a flat 10, and lasts 2 seconds instead of 4."
-  - code_imp: "Debug Augment Fabricator now creates augments usable by anyone regardless of role."
-  - code_imp: "Augment Catalogue no longer displays forced effects like Mental Corrosion."

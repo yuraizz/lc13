@@ -1,6 +1,0 @@
-author: "EnderMage99"
-delete-after: True
-changes:
-  - bugfix: "Fixed ~463 runtime errors across 22 error types (null references, missing variables, signal overrides, race conditions)"
-  - code_imp: "Added stamina field to armor datum for upstream SS13 compatibility"
-  - code_imp: "Deep water no longer tries to damage mobs that haven't finished initializing"
