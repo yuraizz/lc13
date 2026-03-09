@@ -1,0 +1,5 @@
+author: "zeratino"
+delete-after: True
+changes:
+  - rscadd: "new fell bullet sprites"
+  - rscadd: "ego neck (flaming head)"
