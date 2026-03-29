@@ -1,8 +1,0 @@
-author: "Deadkung"
-delete-after: True
-changes:
-  - imageadd: "empowered_rhythm"
-  - imageadd: "rhythm_musical_note"
-  - imageadd: "rhythm"
-  - rscadd: "a bunch of procs to the rhythm weapon"
-  - rscadd: "realization/rhythm"
