@@ -1,0 +1,5 @@
+author: "Kitsunemitsu"
+delete-after: True
+changes:
+  - rscadd: "Added preferences for your district and zone"
+  - rscdel: "Removed terragov prefs"
