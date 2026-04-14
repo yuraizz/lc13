@@ -1,4 +1,0 @@
-author: "SumirekoFan"
-delete-after: True
-changes:
-  - bugfix: "Removes Hookah Caterpillar from the Neutral Faction, allowing Hookah to be hit by weapons which previously it couldn't due to it bypassing faction checks. Then overrides a few procs to fix the new problem it caused by making it also target carbons."
