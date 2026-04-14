@@ -1,0 +1,4 @@
+author: "Destrok171"
+delete-after: True
+changes:
+  - bugfix: "Department disposal units no longer grant you eternal regeneration"
