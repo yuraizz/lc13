@@ -1,0 +1,5 @@
+author: "Omegaocg"
+delete-after: True
+changes:
+  - rscadd: "Added a new structure capsule with the Banking Office, a template for it and made it limit potential at 20 on use."
+  - spellcheck: "Structure capsules no longer all share the fishing office description."
