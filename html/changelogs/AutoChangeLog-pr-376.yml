@@ -1,0 +1,4 @@
+author: "InsightfulParasite"
+delete-after: True
+changes:
+  - refactor: "Abnormality dashes and charges into abilities."
