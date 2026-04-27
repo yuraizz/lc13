@@ -63,7 +63,6 @@
 	var/special_atk_combo = 0
 	var/swords = 0
 	var/nihil_present = FALSE
-	var/can_act = TRUE
 
 	attack_action_types = list(
 		/datum/action/innate/change_icon_kod,
