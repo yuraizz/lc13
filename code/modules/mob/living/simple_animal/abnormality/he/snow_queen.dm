@@ -63,7 +63,6 @@
 	)
 	gift_type = /datum/ego_gifts/frostcrown
 	abnormality_origin = ABNORMALITY_ORIGIN_LOBOTOMY
-	var/can_act = TRUE
 	//The purpose of this variable is to prevent people from ghosting in the arena and making snow queen unworkable.
 	var/arena_timer = 0
 	var/slash_cooldown = 0
@@ -92,11 +91,16 @@
 	var/static/list/temp_effects = list()
 	//Reusable visuals for cleave attacks.
 	var/datum/reusable_visual_pool/RVP = new(200)
+	var/obj/effect/proc_holder/ability/aimed/dash/big_wolf/snowqueen/ourdash
+
+/mob/living/simple_animal/hostile/abnormality/snow_queen/Initialize()
+	. = ..()
+	ourdash = new()
 
 /mob/living/simple_animal/hostile/abnormality/snow_queen/Move()
 	if(!can_act)
 		return FALSE
-	..()
+	return ..()
 
 /mob/living/simple_animal/hostile/abnormality/snow_queen/PostSpawn()
 	..()
@@ -176,9 +180,9 @@
 		return
 	return ..()
 
-/mob/living/simple_animal/hostile/abnormality/snow_queen/Life()
+/mob/living/simple_animal/hostile/abnormality/snow_queen/handle_automated_action()
 	. = ..()
-	if(status_flags & GODMODE)
+	if(!can_act || IsContained() || stat == DEAD)
 		return
 	if(arena_attacks)
 		if(arena_timer <= world.time)
@@ -195,7 +199,7 @@
 	ranged_cooldown = world.time + ranged_cooldown_time
 	var/turf/T = get_step(get_turf(src), pick(1,2,4,5,6,8,9,10))
 	if(T.density == FALSE)
-		ProjectSplinter(target, T, 8)
+		DeferProjectile(/obj/projectile/frost_splinter, target, T, 8)
 		SLEEP_CHECK_DEATH(3)
 		playsound(get_turf(src), 'sound/abnormalities/despairknight/attack.ogg', 50, 0, 4)
 		return
@@ -256,6 +260,10 @@
 		ReleasePrisoners()
 	ClearEffects()
 	QDEL_NULL(RVP)
+	kissed = null
+	snow_prison = null
+	storybook_hero = null
+	frozen_employee = null
 	return ..()
 
 		/*---------------------\
@@ -329,21 +337,6 @@
 
 	SLEEP_CHECK_DEATH(0.5 SECONDS)
 	can_act = TRUE
-
-//Quick proc for spawning and launching a frost splinter projectile.
-/mob/living/simple_animal/hostile/abnormality/snow_queen/proc/ProjectSplinter(mob/living/L, turf/T, projectile_telegraph_delay = 3)
-	if(!L || !T)
-		return
-	var/obj/projectile/frost_splinter/P
-	P = new(T)
-	P.starting = T
-	P.firer = src
-	P.fired_from = T
-	P.yo = L.y - T.y
-	P.xo = L.x - T.x
-	P.original = L
-	P.preparePixelProjectile(L, T)
-	addtimer(CALLBACK (P, TYPE_PROC_REF(/obj/projectile, fire)), projectile_telegraph_delay)
 
 		/*--------\
 		|WORK KISS|
@@ -538,9 +531,13 @@
 	SIGNAL_HANDLER
 	Defrost(snow_prison, TRUE)
 	if(!QDELETED(storybook_hero))
-		storybook_hero.dust(TRUE, TRUE)
+		var/mob/living/hero = storybook_hero
+		storybook_hero = null
+		hero.dust(TRUE, TRUE)
 	if(!QDELETED(frozen_employee))
-		frozen_employee.dust(TRUE, TRUE)
+		var/mob/living/frozen = frozen_employee
+		frozen_employee = null
+		frozen.dust(TRUE, TRUE)
 	frozen_employee = null
 	storybook_hero = null
 	QDEL_IN(src, 10)
@@ -573,6 +570,8 @@
 		if(do_after(src, 1 SECONDS, target = src) && get_health == health)
 			for(var/turf/after_spike in after_image_locations)
 				AoeTurfEffect(after_spike, 6)
+			//Always 1 free dash attack
+			ourdash.AlterCharge(1)
 			BladeDash(target)
 
 //Rapidly shoots frost splinters at the target
@@ -585,7 +584,7 @@
 			break
 		if(!do_after(src, 2, target = src) && get_health > health)
 			break
-		ProjectSplinter(L, get_turf(src), 3)
+		DeferProjectile(/obj/projectile/frost_splinter, L, get_turf(src), 3)
 		playsound(get_turf(src), 'sound/abnormalities/despairknight/attack.ogg', 50, 0, 4)
 
 //At half health a healing patch of roses spawn to assist the player.
@@ -662,7 +661,7 @@
 			break
 		if(shootems == get_turf(src))
 			continue
-		ProjectSplinter(L, shootems, 3)
+		DeferProjectile(/obj/projectile/frost_splinter, L, shootems, 3)
 		playsound(shootems, 'sound/abnormalities/despairknight/attack.ogg', 50, 0, 4)
 
 //Determines if the effect on a AOE area is telegraphed or actually harmful.
@@ -679,32 +678,15 @@
 	can_act = FALSE
 	if(IsContained())
 		return
-	var/turf/target_turf = get_turf(dash_target)
-	var/list/hit_mob = list()
 	icon_state = "snowqueen_charge"
 	update_icon()
-	if(do_after(src, 1 SECONDS, target = src))
-		//I know it isnt a directional sprite... maybe one day -IP
-		icon_state = "snowqueen_burst"
-		update_icon()
-		var/turf/wallcheck = get_turf(src)
-		var/enemy_direction = get_dir(src, target_turf)
-		for(var/i = 0 to 7)
-			if(get_turf(src) != wallcheck || stat == DEAD || IsContained())
-				break
-			wallcheck = get_step(src, enemy_direction)
-			if(!ClearSky(wallcheck))
-				break
-			//without this the attack happens instantly
-			sleep(1)
-			forceMove(wallcheck)
-			playsound(wallcheck, 'sound/abnormalities/doomsdaycalendar/Lor_Slash_Generic.ogg', 20, 0, 4)
-			for(var/turf/T in orange(get_turf(src), 1))
-				if(isclosedturf(T))
-					continue
-				new /obj/effect/temp_visual/slice(T)
-				hit_mob = HurtInTurf(T, hit_mob, 20, RED_DAMAGE, null, TRUE, FALSE, TRUE, hurt_structure = FALSE, attack_type = (ATTACK_TYPE_MELEE | ATTACK_TYPE_SPECIAL))
-	can_act = TRUE
+	ourdash.Perform(dash_target,src)
+
+/mob/living/simple_animal/hostile/abnormality/snow_queen/proc/startCharge()
+	icon_state = "snowqueen_burst"
+	update_icon()
+
+/mob/living/simple_animal/hostile/abnormality/snow_queen/proc/endCharge()
 	icon_state = "snowqueen"
 	update_icon()
 

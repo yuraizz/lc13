@@ -408,6 +408,8 @@
 #define COMSIG_MOB_AFTER_APPLY_DAMGE "mob_after_apply_damage"
 /// Blocks the damage from being taken if this is returned in a signal handler
 #define COMPONENT_MOB_DENY_DAMAGE (1<<0)
+///from /datum/status_effect/stacking/rupture/trigger_rupture(): (stacks_before_halving)
+#define COMSIG_RUPTURE_TRIGGERED "rupture_triggered"
 ///from base of /mob/throw_item(): (atom/target)
 #define COMSIG_MOB_THROW "mob_throw"
 ///from base of /mob/verb/examinate(): (atom/target)
@@ -485,6 +487,14 @@
 #define COMSIG_PROCESS_BORGCHARGER_OCCUPANT "living_charge"
 ///sent from borg mobs to itself, for tools to catch an upcoming destroy() due to safe decon (rather than detonation)
 #define COMSIG_BORG_SAFE_DECONSTRUCT "borg_safe_decon"
+
+///from base of /atom/movable/keyLoop(), before client movement: (new_loc, direct)
+#define COMSIG_MOB_CLIENT_PRE_LIVING_MOVE "mob_client_pre_living_move"
+	#define COMSIG_MOB_CLIENT_BLOCK_PRE_LIVING_MOVE (1<<0)
+
+///from base of /mob/living/CanAllowThrough(): (atom/movable/mover, border_dir)
+#define COMSIG_LIVING_CAN_ALLOW_THROUGH "living_can_allow_through"
+	#define COMPONENT_LIVING_PASSABLE (1<<0)
 
 ///sent when a mob/login() finishes: (client)
 #define COMSIG_MOB_CLIENT_LOGIN "comsig_mob_client_login"
@@ -1085,6 +1095,10 @@
 
 //Status signals
 #define COMSIG_STATUS_BLEED_DAMAGE "bleed_damage"
+/// Sent to the attacker when a Poise crit triggers: (mob/living/target, damage_dealt)
+#define COMSIG_POISE_CRIT_ATTACKER "poise_crit_attacker"
+/// Sent to the target when hit by a Poise crit: (mob/living/target, damage_dealt)
+#define COMSIG_POISE_CRIT_TARGET "poise_crit_target"
 
 /// generally called before temporary non-parallel animate()s on the atom (animation_duration)
 #define COMSIG_ATOM_TEMPORARY_ANIMATION_START "atom_temp_animate_start" // LC13 addition: MODULE ID: FISHING

@@ -106,6 +106,9 @@ GLOBAL_LIST_EMPTY(marked_players)
 	// When this var is TRUE, will not attempt to break out of somewhere it's confined in or buckled to.
 	var/docile_confinement = FALSE
 
+	//can attack and move
+	var/can_act = TRUE
+
 /mob/living/simple_animal/hostile/Initialize()
 	/*Update Speed overrides set speed and sets it
 		to the equivilent of move_to_delay. Basically
@@ -331,6 +334,8 @@ GLOBAL_LIST_EMPTY(marked_players)
 			INVOKE_ASYNC(src, TYPE_PROC_REF(/mob/living/simple_animal/hostile, patrol_to), source_turf) // This is an ASync because it calls AStar and that calls stoplag so if you ever have deal_damage in a signal it will throw a warning
 
 /mob/living/simple_animal/hostile/Move(atom/newloc, dir , step_x , step_y)
+	if(!can_act)
+		return
 	if(dodging && approaching_target && prob(dodge_prob) && moving_diagonally == 0 && isturf(loc) && isturf(newloc))
 		return dodge(newloc,dir)
 	else
@@ -534,6 +539,8 @@ GLOBAL_LIST_EMPTY(marked_players)
 //////////////HOSTILE MOB TARGETTING AND AGGRESSION////////////
 ///Gets a list of everything that can possibly be targeted
 /mob/living/simple_animal/hostile/proc/ListTargets(max_range = vision_range) //Step 1, find out what we can see
+	if(!can_act)
+		return list()
 	//The thorough mode, rarely used
 	if(search_objects)
 		. = oview(max_range, targets_from)
@@ -952,6 +959,8 @@ GLOBAL_LIST_EMPTY(marked_players)
 
 //Functionally this proc is a simplier version of the core code walk_to().
 /mob/living/simple_animal/hostile/proc/Goto(target, delay, minimum_distance)
+	if(!can_act)
+		return
 	if(target == src.target)
 		approaching_target = TRUE
 	else
@@ -964,6 +973,8 @@ GLOBAL_LIST_EMPTY(marked_players)
 	return TRUE
 
 /mob/living/simple_animal/hostile/proc/AttackingTarget(atom/attacked_target)
+	if(!can_act)
+		return
 	if(client)
 		if(target == src)
 			to_chat(src, span_warning("You almost attack yourself, but then decide against it."))
@@ -1015,7 +1026,7 @@ GLOBAL_LIST_EMPTY(marked_players)
 	var/stupidly_complicated_cooldown_calc = world.time - ranged_cooldown
 	if(stupidly_complicated_cooldown_calc > -SSnpcpool.wait)
 		//Our cooldown is less than the next check.
-		if(stupidly_complicated_cooldown_calc < 0)
+		if(stupidly_complicated_cooldown_calc < 0 && !QDELETED(src))
 			// Try to call this before our next check in 2 SECONDS
 			addtimer(CALLBACK(src, PROC_REF(OpenFire), shootem), clamp(abs(stupidly_complicated_cooldown_calc) + rand(-1,5), 1, 1.99 SECONDS), TIMER_STOPPABLE)
 		else
@@ -1028,6 +1039,8 @@ GLOBAL_LIST_EMPTY(marked_players)
 	if(QDELETED(src))
 		return
 	if(stat == DEAD)
+		return
+	if(!target)
 		return
 	var/in_range = melee_reach > 1 ? target.Adjacent(targets_from) || (get_dist(src, A) <= melee_reach && (target in view(src, melee_reach))) : target.Adjacent(targets_from)
 	if(in_range)
@@ -1132,6 +1145,8 @@ GLOBAL_LIST_EMPTY(marked_players)
 
 // for use with megafauna destroying everything around them
 /mob/living/simple_animal/hostile/proc/DestroySurroundings()
+	if(!can_act)
+		return
 	if(environment_smash)
 		EscapeConfinement()
 		for(var/dir in GLOB.cardinals)
@@ -1330,6 +1345,8 @@ GLOBAL_LIST_EMPTY(marked_players)
 
 ////// Patrol Code ///////
 /mob/living/simple_animal/hostile/proc/CanStartPatrol()
+	if(!can_act)
+		return FALSE
 	return AIStatus == AI_IDLE //if AI is idle, begin checking for patrol
 
 /mob/living/simple_animal/hostile/proc/patrol_to(turf/target_location = null)

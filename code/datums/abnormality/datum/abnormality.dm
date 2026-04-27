@@ -62,6 +62,8 @@
 	var/working = FALSE
 	///a list of variable the abno wants to remember after death
 	var/list/transferable_var
+	///a simpler transferable var between lives.
+	var/transferable_simple
 	///if the abno spawns with a slime radio or not
 	var/abno_radio = FALSE
 	// Object = list(x tile offset, y tile offset)
@@ -238,7 +240,7 @@
 	var/attribute_type = "N/A"
 	var/attribute_given = 0
 	if(pe > 0) // Work did not fail
-		if(!stupid)
+		if(!stupid && !QDELETED(current))
 			attribute_type = current.work_attribute_types[work_type]
 		else
 			attribute_type = WORK_TO_ATTRIBUTE[work_type]
