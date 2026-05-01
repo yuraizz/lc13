@@ -1,0 +1,4 @@
+author: "InsightfulParasite"
+delete-after: True
+changes:
+  - bugfix: "Some abnormalities hard deleting  due to list vars."
